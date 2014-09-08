@@ -19,22 +19,57 @@ function displayLocation(position) {
 	var div = document.getElementById("location");
 	div.innerHTML = "You are at Latitude: "
 + latitude + ", Longitude; " + longitude;
+
+showMap(position.coords);
+
 }
 
-function displayError(error) {
-	var errorTypes = {
-		0: "Unkown Error",
-		1: "Permission Denied by user",
-		2: "Position is not available",
-		3: "RequestTimed out",
+var map;
+function showMap(coords) {
+
+var googleLatAndLong =
+new google.maps.LatLng(coords.latitude,
+coords.longitude);
+
+var mapOptions = {
+zoom: 10,
+center: googleLatAndLong,
+mapTypeId: google.maps.MapTypeId.ROADMAP
+};
+var mapDiv = document.getElementById("map");
+map = new google.maps.Map(mapDiv, mapOptions);
+
+var title = "Your Location";
+var content = "You are here: " + coords.latitude + "," + coords.longitude;
+addMarker(map, googleLatAndLong, title, content);
+}
+
+function addMarker (map, latlong, title, content) {
+	var markerOptions = {
+		map: map,
+		position: latlong,
+		title: title,
+		clickable: true,
 	};
 
-	var errorMessage = errorTypes[error.code];
-	if (error.code === 0 || error.code === 2) {
-		errorMessage = errorMessage + " " + error.message;
+		var marker = new google.maps.Marker(markerOptions);
+
+		var infoWindowOptions = {
+		content: content,
+		postition: latlong,
+
+	};
+
+	var infoWindow = new google.maps.InfoWindow(infoWindowOptions);
+
+	google.maps.event.addListener(marker, "click", function() {
+		infoWindow.open(map);
+	});
+	
 	}
 
-	var div = document.getElementById("location");
-	div.innerHTML = errorMessage;
+	
 
-}
+
+
+
